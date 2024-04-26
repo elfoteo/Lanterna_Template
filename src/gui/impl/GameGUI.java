@@ -2,11 +2,11 @@ package gui.impl;
 
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
+import engine.ExamplePlayer;
 import engine.UIManager;
 import gui.AbstractTerminalGUI;
 import gui.ITerminalGUI;
-import utils.Constants;
+import utils.InputHandler;
 import utils.Utils;
 
 import java.io.IOException;
@@ -15,8 +15,10 @@ import java.io.IOException;
  * GUI implementation for the main game screen.
  */
 public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
+    private boolean gameRunning = true;
+    private ExamplePlayer examplePlayer;
     /**
-     * Constructor for the AboutGUI.
+     * Constructor for the GameGUI.
      *
      * @param uiManager The UIManager giving access to the terminal and screen.
      */
@@ -30,35 +32,41 @@ public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
     @Override
     public void show() throws IOException {
         super.show();
-        boolean[] running = new boolean[]{true};
 
         screen.clear();
         Utils.hideCursor(0, 0, textGraphics);
 
-        // Background thread for handling user input during the display
-        // (Async input handling)
-        new Thread(() -> {
-            while (running[0]) {
-                KeyStroke choice = null;
-                try {
-                    choice = screen.readInput();
-                } catch (IOException ignored) {}
+        int centerX = screen.getTerminalSize().getColumns()/2;
+        int centerY = screen.getTerminalSize().getRows()/2;
+        examplePlayer = new ExamplePlayer(centerX, centerY);
 
-                if (choice != null) {
-                    // Terminate the loop on EOF or Escape key press
-                    if (choice.getKeyType() == KeyType.EOF || choice.getKeyType() == KeyType.Escape) {
-                        running[0] = false;
-                    }
+        // InputHandler is a class to handle input asynchronously
+        InputHandler inputHandler = new InputHandler(screen);
+        inputHandler.startThread();
+
+        while (gameRunning){
+            // Draw everything on screen
+            draw();
+            // Get the key press from the user if any
+            KeyStroke choice = inputHandler.handleInput();
+            if (choice != null){
+                // If the user has pressed any key
+                switch (choice.getKeyType()) {
+                    // Handle arrow movement
+                    case ArrowUp -> examplePlayer.move(0, -1);
+                    case ArrowDown -> examplePlayer.move(0, 1);
+                    case ArrowLeft -> examplePlayer.move(-1, 0);
+                    case ArrowRight -> examplePlayer.move(1, 0);
+                    case EOF, Escape -> gameRunning = false;
                 }
             }
-        }).start();
 
-        while (running[0]) {
-            // Draw the GUI
-            draw();
-            // Wait some time to avoid CPU Burn
-            Utils.waitFor(200);
+            // Don't burn the CPU
+            Utils.waitFor(10);
         }
+        // Stop the input handler thread
+        inputHandler.stopThread();
+        // Call the close method for the text gui
         onClose();
     }
 
@@ -73,7 +81,16 @@ public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
         super.draw();
         textGraphics.setForegroundColor(uiManager.getThemeForeground());
         textGraphics.setBackgroundColor(uiManager.getThemeBackground());
-        drawText("\nThis is an example for a game gui.\nHere you should put the logic for your game.");
+        drawText("""
+                This is an example for a game gui.
+                Here you should put the logic for your game.
+                Use your arrows keys to move the example player.
+                The player position is:\s""" + examplePlayer.getX()+", "+ examplePlayer.getY());
+
+        // If there is a player instance, then draw the player
+        if (examplePlayer != null){
+            examplePlayer.draw(textGraphics);
+        }
 
         textGraphics.disableModifiers(SGR.BOLD);
         textGraphics.setForegroundColor(uiManager.getThemeForeground());
@@ -88,7 +105,7 @@ public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
      * @param completeText The complete text to be drawn.
      */
     private void drawText(String completeText){
-        int offsetY = 0;
+        int offsetY = 1;
         for (String line : completeText.split("\n")){
             textGraphics.putString(0, offsetY, line);
             offsetY++;

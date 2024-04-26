@@ -19,7 +19,7 @@ public class SettingsGUI extends AbstractTerminalGUI implements ITerminalGUI {
     private static final String GUI_TITLE = "Settings";
 
     /**
-     * Constructor for the AboutGUI.
+     * Constructor for the SettingsGUI.
      *
      * @param uiManager The UIManager giving access to the terminal and screen.
      */

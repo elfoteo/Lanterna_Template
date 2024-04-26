@@ -11,6 +11,7 @@ import java.io.IOException;
 
 /**
  * An abstract implementation of the ITerminalGUI interface providing common functionality.
+ * This code should not be modified unless you know what you are doing.
  */
 public class AbstractTerminalGUI implements ITerminalGUI {
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 /**
  * This interface represents a terminal GUI.
+ * This code should not be modified unless you know what you are doing.
  */
 public interface ITerminalGUI {
 
