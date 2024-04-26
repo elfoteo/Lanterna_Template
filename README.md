@@ -6,6 +6,7 @@ This template provides a simple and easy way to use the Lanterna library in your
  - Error Handling: Includes error handling mechanisms.
  - Utils and Constants: Utility classes for common functionality.
  - Basic Game Implementation: A simple game example.
+ - Configuration API: A class that allows to read and load configurations from files
 ## [Official documentation](https://github.com/mabe02/lanterna/blob/master/docs/contents.md)
 For detailed information on using Lanterna, refer to the official documentation.
 ## Screenshots
@@ -15,7 +16,7 @@ For detailed information on using Lanterna, refer to the official documentation.
 
  - Main Menu<br> ![Settings Menu](images/settingsMenu.png)
 
- - Main Menu<br> ![Game](images/game.png)
+ - Game Example<br> ![Game](images/game.png)
 ## The goal
 <p>
 The primary goal of this template is
