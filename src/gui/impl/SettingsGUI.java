@@ -1,14 +1,14 @@
 package gui.impl;
 
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.graphics.SimpleTheme;
+import com.googlecode.lanterna.gui2.*;
 import engine.UIManager;
 import gui.AbstractTerminalGUI;
 import gui.ITerminalGUI;
 import utils.Constants;
-import utils.Utils;
 
 import java.io.IOException;
 
@@ -17,7 +17,10 @@ import java.io.IOException;
  */
 public class SettingsGUI extends AbstractTerminalGUI implements ITerminalGUI {
     private static final String GUI_TITLE = "Settings";
-
+    private final MenuPopupWindow window;
+    // UI Components
+    private final TextBox nameTextBox; // This needs to be accessed later, so we save it globally
+    private final TextBox surnameTextBox; // This needs to be accessed later, so we save it globally
     /**
      * Constructor for the SettingsGUI.
      *
@@ -25,87 +28,95 @@ public class SettingsGUI extends AbstractTerminalGUI implements ITerminalGUI {
      */
     public SettingsGUI(UIManager uiManager) {
         super(uiManager.getTerminal());
+        // Set instance variables
         this.screen = uiManager.getScreen();
         this.textGraphics = uiManager.getTextGraphics();
         this.uiManager = uiManager;
+
+        // Set local variables
+        String name = "";
+        String surname = "";
+
+        if (uiManager.config.name != null){
+            name = uiManager.config.name;
+        }
+        if (uiManager.config.surname != null){
+            surname = uiManager.config.surname;
+        }
+
+
+        /* =============== Window =============== */
+        window = new MenuPopupWindow(uiManager.mainPanel);
+        window.setTheme(uiManager.getWindowTheme());
+        Panel windowBody = new Panel();
+        windowBody.addComponent(new Label(GUI_TITLE));
+        windowBody.addComponent(new EmptySpace(new TerminalSize(1, 1))); // Add some empty space
+
+        /* =============== Name =============== */
+        Panel namePanel = new Panel(new LinearLayout(Direction.HORIZONTAL)); // Create a container with a horizontal layout
+
+        Label nameLabel = new Label("Name:"); // Create a label
+        // Under the label, create a textBox for the user to set their name
+        // The TextBox initial content is the name found in the configuration
+        nameTextBox = new TextBox(name);
+
+        // Add the objects to the nameOptions panel
+        namePanel.addComponent(nameLabel);
+        namePanel.addComponent(nameTextBox);
+
+        windowBody.addComponent(namePanel); // Add the nameOptions container to the window body
+        /* =============== Surname =============== */
+        Panel surnamePanel = new Panel(new LinearLayout(Direction.HORIZONTAL)); // Create a container with a horizontal layout
+
+        Label surnameLabel = new Label("Surname:"); // Create a label
+        // Under the label, create a textBox for the user to set their name
+        // The TextBox initial content is the surname found in the configuration
+        surnameTextBox = new TextBox(surname);
+
+        // Add the objects to the nameOptions panel
+        surnamePanel.addComponent(surnameLabel);
+        surnamePanel.addComponent(surnameTextBox);
+
+        windowBody.addComponent(surnamePanel); // Add the nameOptions container to the window body
+        /* =============== Buttons =============== */
+        Panel buttonsPanel = new Panel(new LinearLayout(Direction.HORIZONTAL));
+        // Save button
+        // this::onClose means call the class method onClose, same thing of onClose() but inline
+        Button saveButton = new Button("Save", this::saveAndClose); // Create a button that when clicked closes the current menu
+        // Make the button green (optional)
+        saveButton.setTheme(new SimpleTheme(TextColor.ANSI.GREEN, Constants.appBackground, SGR.BOLD));
+        // Exit button
+        Button exitButton = new Button("Exit", this::onClose); // Create a button that when clicked closes the current menu
+        // Make the button red (optional)
+        exitButton.setTheme(new SimpleTheme(TextColor.ANSI.RED, Constants.appBackground, SGR.BOLD));
+
+        buttonsPanel.addComponent(saveButton); // Add the button to the window body
+        buttonsPanel.addComponent(exitButton); // Add the button to the window body
+
+        windowBody.addComponent(buttonsPanel); // Add the button panel to the window body
+
+        window.setComponent(windowBody);
+        uiManager.setHints(window);
+    }
+
+    private void saveAndClose(){
+        uiManager.config.name = nameTextBox.getText();
+        uiManager.config.surname = surnameTextBox.getText();
+        onClose(); // Close
     }
 
     @Override
     public void show() throws IOException {
         super.show();
-        boolean[] running = new boolean[]{true};
-
-        screen.clear();
-        Utils.hideCursor(0, 0, textGraphics);
-
-        // Background thread for handling user input during the display
-        new Thread(() -> {
-            while (running[0]) {
-                KeyStroke choice = null;
-                try {
-                    choice = screen.readInput();
-                } catch (IOException ignored) {}
-
-                if (choice != null) {
-                    // Terminate the loop on EOF or Escape key press
-                    if (choice.getKeyType() == KeyType.EOF || choice.getKeyType() == KeyType.Escape) {
-                        running[0] = false;
-                    }
-                }
-            }
-        }).start();
-
-        while (running[0]) {
-            // Draw the GUI
-            draw();
-            // Wait some time to avoid CPU Burn
-            Utils.waitFor(200);
-        }
-        onClose();
+        uiManager.gui.addWindowAndWait(window);
     }
 
     @Override
     public void onClose() {
         super.onClose();
+        // Close the window
+        window.close();
+        // Clear the screen
         screen.clear();
-    }
-
-    @Override
-    public void draw() throws IOException {
-        super.draw();
-        String completeText = getTitle() + "Example for a settings gui, you should put your actual settings here if any.\nExamples: Volume of music, Input preferences, ...";
-
-        textGraphics.setForegroundColor(uiManager.getThemeForeground());
-        textGraphics.setBackgroundColor(uiManager.getThemeBackground());
-        drawText(completeText);
-
-        textGraphics.disableModifiers(SGR.BOLD);
-        textGraphics.setForegroundColor(uiManager.getThemeForeground());
-        textGraphics.setBackgroundColor(uiManager.getThemeBackground());
-        textGraphics.putString(0, getTerminalHeight()-1, "Press \"Escape\" to exit");
-        screen.refresh();
-    }
-
-    /**
-     * Draws the text with normal colors.
-     *
-     * @param completeText The complete text to be drawn.
-     */
-    private void drawText(String completeText){
-        int offsetY = 0;
-        for (String line : completeText.split("\n")){
-            textGraphics.putString(0, offsetY, line);
-            offsetY++;
-        }
-        Utils.hideCursor(0, 0, textGraphics);
-    }
-
-    /**
-     * Generates a centered title string.
-     *
-     * @return The formatted title string.
-     */
-    private String getTitle(){
-        return " ".repeat(getTerminalWidth()/2 - GUI_TITLE.length()/2) + GUI_TITLE + "\n\n";
     }
 }

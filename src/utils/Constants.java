@@ -14,12 +14,12 @@ public class Constants {
 
     // App logo generated using https://patorjk.com/software/taag/#p=display&f=Big&t=TEMPLATE
     public static final String[] appLogo = """
-  _______ ______ __  __ _____  _            _______ ______ 
+  _______ ______ __  __ _____  _            _______ ______
  |__   __|  ____|  \\/  |  __ \\| |        /\\|__   __|  ____|
-    | |  | |__  | \\  / | |__) | |       /  \\  | |  | |__   
-    | |  |  __| | |\\/| |  ___/| |      / /\\ \\ | |  |  __|  
-    | |  | |____| |  | | |    | |____ / ____ \\| |  | |____ 
-    |_|  |______|_|  |_|_|    |______/_/    \\_\\_|  |______|                                      
+    | |  | |__  | \\  / | |__) | |       /  \\  | |  | |__
+    | |  |  __| | |\\/| |  ___/| |      / /\\ \\ | |  |  __|
+    | |  | |____| |  | | |    | |____ / ____ \\| |  | |____
+    |_|  |______|_|  |_|_|    |______/_/    \\_\\_|  |______|
 """.split("\n");
     // Applying the blinkStyle to a text will make it blink
     public static final StyleSet<StyleSet.Set> blinkStyle = (new StyleSet.Set()).setModifiers(EnumSet.of(SGR.BLINK));
@@ -30,4 +30,5 @@ public class Constants {
 Welcome to the template for lanterna.
 This is an about page.
 Here you should explain how the app works.""";
+    public static final String configPath = "config/exampleConfiguration.txt";
 }

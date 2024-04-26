@@ -21,6 +21,7 @@ public interface ITerminalGUI {
 
     /**
      * Method to show the GUI.
+     * Called only one time when the GUI opens.
      * @throws IOException if an I/O error occurs
      */
     void show() throws IOException;
@@ -32,7 +33,7 @@ public interface ITerminalGUI {
 
     /**
      * Method to open a new GUI.
-     * @param terminalGUI the terminal GUI to open
+     * @param terminalGUI the new terminal GUI to open
      * @throws IOException if an I/O error occurs
      */
     void openGUI(ITerminalGUI terminalGUI) throws IOException;

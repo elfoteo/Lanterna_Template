@@ -42,6 +42,10 @@ public class Utils {
      * @param message The debugging message to be displayed.
      */
     public static void Debug(Object message) {
+        if (message == null){
+            message = "null";
+        }
+        System.out.println("[DEBUG] "+message);
         JOptionPane.showMessageDialog(null, message.toString());
     }
     public static String exceptionToString(Exception ex){
