@@ -3,9 +3,9 @@ package gui;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
-import utils.TerminalResizeEventHandler;
+import engine.utils.TerminalResizeEventHandler;
 import engine.UIManager;
-import utils.Utils;
+import engine.utils.Utils;
 
 import java.io.IOException;
 

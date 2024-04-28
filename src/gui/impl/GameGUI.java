@@ -5,9 +5,9 @@ import engine.UIManager;
 import engine.World;
 import gui.AbstractTerminalGUI;
 import gui.ITerminalGUI;
-import utils.Constants;
-import utils.InputHandler;
-import utils.Utils;
+import engine.utils.Constants;
+import engine.utils.InputHandler;
+import engine.utils.Utils;
 
 import java.io.IOException;
 

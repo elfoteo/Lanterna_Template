@@ -2,7 +2,7 @@ package engine;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
-import utils.IRenderable;
+import engine.utils.IRenderable;
 
 /**
  * Example of a player class implementation.

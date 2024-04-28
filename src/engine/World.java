@@ -2,8 +2,8 @@ package engine;
 
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
-import utils.IRenderable;
-import utils.Utils;
+import engine.utils.IRenderable;
+import engine.utils.Utils;
 
 /**
  * The Word class implements the logic for the world in your game

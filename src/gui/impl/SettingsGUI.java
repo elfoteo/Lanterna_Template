@@ -8,8 +8,8 @@ import com.googlecode.lanterna.gui2.*;
 import engine.UIManager;
 import gui.AbstractTerminalGUI;
 import gui.ITerminalGUI;
-import utils.Constants;
-import utils.Utils;
+import engine.utils.Constants;
+import engine.utils.Utils;
 
 import java.io.IOException;
 

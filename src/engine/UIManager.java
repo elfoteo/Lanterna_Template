@@ -7,11 +7,16 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.Terminal;
+import engine.music.MusicManager;
+import engine.music.MusicPlayer;
 import gui.impl.MainMenuGUI;
-import utils.ConfigAPI;
-import utils.Constants;
-import utils.impl.Config;
+import engine.utils.config.ConfigAPI;
+import engine.utils.Constants;
+import engine.utils.config.impl.Config;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,20 +42,35 @@ public class UIManager {
     // List of hints to tell lanterna how to handle windows, such as making it centered or removing borders
     private final List<Window.Hint> hints = new ArrayList<>();
     // Configuration example
-    public Config config = new Config();
+    public Config config;
     public ConfigAPI configAPI;
-    public UIManager(Terminal terminal) throws IOException {
+    // Music manager
+    private MusicPlayer musicPlayer;
+
+    public UIManager(Terminal terminal) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         // Setup variables
         this.terminal = terminal;
 
-        // Create a new ConfigAPI object
-        // using the file defined in the Constants class
+        // Create a new ConfigAPI object using the file defined in the Constants class
         configAPI = new ConfigAPI(Constants.configPath);
 
-        configAPI.populateConfig(config); // Load the data of the file in to the config object
+        config = new Config(); // Create a new empty config objects, now all the values are null
+        configAPI.populateConfig(config); // Load the data of the file in to the config object to populate them
 
         // Now that the configuration is loaded, you can use config.name = "newName"
         // and it will be automatically saved when the app exits
+
+        // Music
+        musicPlayer = MusicManager.getMusicPlayer(); // Get the music player from the music manager
+        if (musicPlayer != null){ // Check if it is not null (can happen if no music is loaded)
+            List<File> soundtracks = MusicManager.getSoundtracks(); // get all the soundtracks
+            int randomIndex = (int) (Math.random() * soundtracks.size()); // Select a random one (example)
+            musicPlayer.changeSoundtrack(soundtracks.get(randomIndex));
+            // Start playing the selected soundtrack
+            // (if no soundtrack is selected, the default is the first)
+            musicPlayer.play();
+            musicPlayer.setVolumeToPercentage(0.15F); // set volume to 15%
+        }
 
         // For terminal gui:
 

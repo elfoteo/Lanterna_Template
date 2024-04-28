@@ -1,7 +1,8 @@
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import engine.UIManager;
-import utils.Utils;
+import engine.music.MusicManager;
+import engine.utils.Utils;
 
 import java.io.IOException;
 
@@ -15,6 +16,19 @@ public class Program {
             // Create terminal
             terminal = factory.createTerminal();
             terminal.enterPrivateMode();
+
+            // Register music manager
+            // It is in the program because it should be called only once,
+            // it is used later by the UIManager constructor
+            boolean success = MusicManager.register();
+            /* Example:
+            if (success){
+                // If the MusicManager has loaded successfully, do something
+            }
+            else{
+                // Do something else...
+            }
+             */
 
             // Let's keep the program class small
             // To do that we create another class to handle all the UI
