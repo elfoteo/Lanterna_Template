@@ -16,6 +16,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The UIManager class manages the user interface components and interaction with the Program class.
+ * It handles the terminal, screen, graphics, and GUI elements such as windows and panels.
+ * This class is called directly by the program and is responsible for initializing the UI components and
+ * displaying the main GUI screen.
+ */
 public class UIManager {
     // Store the terminal variable as final because it doesn't need to be modified
     private final Terminal terminal;

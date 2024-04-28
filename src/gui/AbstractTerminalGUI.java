@@ -10,7 +10,7 @@ import utils.Utils;
 import java.io.IOException;
 
 /**
- * An abstract implementation of the ITerminalGUI interface providing common functionality.
+ * An abstract implementation of the ITerminalGUI interface providing common functionality and terminal resizing.
  * This code should not be modified unless you know what you are doing.
  */
 public class AbstractTerminalGUI implements ITerminalGUI {

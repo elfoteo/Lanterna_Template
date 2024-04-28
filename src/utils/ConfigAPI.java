@@ -13,6 +13,7 @@ import java.util.Properties;
 /**
  * The ConfigAPI class provides functionality for managing configuration settings.
  * It allows setting, getting, populating, and saving configuration settings to a file.
+ * This code should not be touched unless you know what you are doing.
  */
 public class ConfigAPI {
 

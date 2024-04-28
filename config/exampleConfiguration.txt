@@ -1,0 +1,4 @@
+#Configuration file
+#Sun Apr 28 11:19:25 CEST 2024
+name=dawdad
+surname=Hello

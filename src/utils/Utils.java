@@ -101,6 +101,28 @@ public class Utils {
     }
 
     /**
+     * Draws the text with normal colors.
+     *
+     * @param completeText The complete text to be drawn.
+     */
+    public static void drawText(TextGraphics textGraphics, String completeText){
+        drawText(textGraphics, completeText, 1);
+    }
+
+    /**
+     * Draws the text with normal colors.
+     *
+     * @param completeText The complete text to be drawn.
+     */
+    public static void drawText(TextGraphics textGraphics, String completeText, int offsetY){
+        for (String line : completeText.split("\n")){
+            textGraphics.putString(0, offsetY, line);
+            offsetY++;
+        }
+        Utils.hideCursor(0, 0, textGraphics);
+    }
+
+    /**
      * Hides the cursor at the specified position on the screen by using inverted colors.
      * The cursor is hidden by placing space a character at the cursor position with inverted colors.
      * This causes the cursor to invert the colors again, hiding it.

@@ -13,7 +13,9 @@
           <root url="jar://$MODULE_DIR$/lanterna-3.1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.ideaLibSources/lanterna-3.1.2-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>

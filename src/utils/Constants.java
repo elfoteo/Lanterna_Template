@@ -31,4 +31,5 @@ Welcome to the template for lanterna.
 This is an about page.
 Here you should explain how the app works.""";
     public static final String configPath = "config/exampleConfiguration.txt";
+    public static int GameFPS = 60;
 }

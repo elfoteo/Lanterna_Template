@@ -19,17 +19,11 @@ import java.io.IOException;
 public class SettingsGUI extends AbstractTerminalGUI implements ITerminalGUI {
     private static final String GUI_TITLE = "Settings";
     private final MenuPopupWindow window;
-    // UI Components
-    private final TextBox nameTextBox; // This needs to be accessed later, so we save it globally
-    private final TextBox surnameTextBox; // This needs to be accessed later, so we save it globally
-    /**
-     * Constructor for the SettingsGUI.
-     *
-     * @param uiManager The UIManager giving access to the terminal and screen.
-     */
+    private final TextBox nameTextBox;
+    private final TextBox surnameTextBox;
+
     public SettingsGUI(UIManager uiManager) {
         super(uiManager.getTerminal());
-        // Set instance variables
         this.screen = uiManager.getScreen();
         this.textGraphics = uiManager.getTextGraphics();
         this.uiManager = uiManager;
@@ -45,59 +39,76 @@ public class SettingsGUI extends AbstractTerminalGUI implements ITerminalGUI {
             surname = uiManager.config.surname;
         }
 
-
-        /* =============== Window =============== */
         window = new MenuPopupWindow(uiManager.mainPanel);
         window.setTheme(uiManager.getWindowTheme());
         Panel windowBody = new Panel();
         windowBody.addComponent(new Label(GUI_TITLE));
         windowBody.addComponent(new EmptySpace(new TerminalSize(1, 1))); // Add some empty space
 
-        /* =============== Name =============== */
-        Panel namePanel = new Panel(new LinearLayout(Direction.HORIZONTAL)); // Create a container with a horizontal layout
+        // Call the createTextBox function defined below
+        nameTextBox = createTextBox("Name:", name, windowBody);
+        surnameTextBox = createTextBox("Surname:", surname, windowBody);
 
-        Label nameLabel = new Label("Name:"); // Create a label
-        // Under the label, create a textBox for the user to set their name
-        // The TextBox initial content is the name found in the configuration
-        nameTextBox = new TextBox(name);
-
-        // Add the objects to the nameOptions panel
-        namePanel.addComponent(nameLabel);
-        namePanel.addComponent(nameTextBox);
-
-        windowBody.addComponent(namePanel); // Add the nameOptions container to the window body
-        /* =============== Surname =============== */
-        Panel surnamePanel = new Panel(new LinearLayout(Direction.HORIZONTAL)); // Create a container with a horizontal layout
-
-        Label surnameLabel = new Label("Surname:"); // Create a label
-        // Under the label, create a textBox for the user to set their name
-        // The TextBox initial content is the surname found in the configuration
-        surnameTextBox = new TextBox(surname);
-
-        // Add the objects to the nameOptions panel
-        surnamePanel.addComponent(surnameLabel);
-        surnamePanel.addComponent(surnameTextBox);
-
-        windowBody.addComponent(surnamePanel); // Add the nameOptions container to the window body
-        /* =============== Buttons =============== */
+        // Create the buttons for closing the settings gui
         Panel buttonsPanel = new Panel(new LinearLayout(Direction.HORIZONTAL));
-        // Save button
-        // this::onClose means call the class method onClose, same thing of onClose() but inline
-        Button saveButton = new Button("Save", this::saveAndClose); // Create a button that when clicked closes the current menu
-        // Make the button green (optional)
-        saveButton.setTheme(new SimpleTheme(TextColor.ANSI.GREEN, Constants.appBackground, SGR.BOLD));
-        // Exit button
-        Button exitButton = new Button("Exit", this::onClose); // Create a button that when clicked closes the current menu
-        // Make the button red (optional)
-        exitButton.setTheme(new SimpleTheme(TextColor.ANSI.RED, Constants.appBackground, SGR.BOLD));
+        addButton(buttonsPanel, "Save", this::saveAndClose, TextColor.ANSI.GREEN);
+        addButton(buttonsPanel, "Exit", this::onClose, TextColor.ANSI.RED);
 
-        buttonsPanel.addComponent(saveButton); // Add the button to the window body
-        buttonsPanel.addComponent(exitButton); // Add the button to the window body
-
-        windowBody.addComponent(buttonsPanel); // Add the button panel to the window body
+        windowBody.addComponent(buttonsPanel);
 
         window.setComponent(windowBody);
         uiManager.setHints(window);
+    }
+
+    /**
+     * Creates a text box with a label and adds them to the specified container panel.
+     *
+     * @param labelText      The label text for the text box.
+     * @param initialContent The initial content (placeholder text) of the text box.
+     * @param container      The panel where the label and text box will be added.
+     * @return The created TextBox object, which can be used to access properties such as text.
+     * @throws IllegalArgumentException If the label, initial content, or container is null.
+     */
+    private TextBox createTextBox(String labelText, String initialContent, Panel container) {
+        if (labelText == null || initialContent == null || container == null) {
+            throw new IllegalArgumentException("Label, initial content, and container must not be null.");
+        }
+
+        // Create a horizontal panel to contain the label and text box
+        Panel panel = new Panel(new LinearLayout(Direction.HORIZONTAL));
+        // Create label and textbox objects
+        Label label = new Label(labelText);
+        TextBox textBox = new TextBox(initialContent);
+
+        // Add label and panel to the gui
+        panel.addComponent(label);
+        panel.addComponent(textBox);
+
+        // Add the panel containing the label and text box to the specified container panel
+        container.addComponent(panel);
+        return textBox;
+    }
+
+    /**
+     * Creates a button with the specified label and action and adds it to the given panel.
+     *
+     * @param panel The panel where the button will be added.
+     * @param label The text to be displayed on the button.
+     * @param action The action to be performed when the button is clicked.
+     * @param color The color theme for the button.
+     * @throws IllegalArgumentException If the panel or label is null.
+     */
+    private void addButton(Panel panel, String label, Runnable action, TextColor color) {
+        if (panel == null || label == null) {
+            throw new IllegalArgumentException("Panel and label must not be null.");
+        }
+
+        // Create a button with the specified label and action
+        Button button = new Button(label, action);
+        // Set the color theme for the button
+        button.setTheme(new SimpleTheme(color, Constants.appBackground, SGR.BOLD));
+        // Add the button to the panel
+        panel.addComponent(button);
     }
 
     private void saveAndClose(){

@@ -91,7 +91,7 @@ public class AboutGUI extends AbstractTerminalGUI implements ITerminalGUI {
         } else {
             textGraphics.setForegroundColor(uiManager.getThemeForeground());
             textGraphics.setBackgroundColor(uiManager.getThemeBackground());
-            drawNormal(completeText);
+            Utils.drawText(textGraphics, completeText, 0);
         }
 
         textGraphics.disableModifiers(SGR.BOLD);
@@ -126,20 +126,6 @@ public class AboutGUI extends AbstractTerminalGUI implements ITerminalGUI {
                 offsetX = 0;
             }
         }
-    }
-
-    /**
-     * Draws the text with normal colors.
-     *
-     * @param completeText The complete text to be drawn.
-     */
-    private void drawNormal(String completeText){
-        int offsetY = 0;
-        for (String line : completeText.split("\n")){
-            textGraphics.putString(0, offsetY, line);
-            offsetY++;
-        }
-        Utils.hideCursor(0, 0, textGraphics);
     }
 
     /**

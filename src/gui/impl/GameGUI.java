@@ -1,11 +1,11 @@
 package gui.impl;
 
-import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.input.KeyStroke;
-import engine.ExamplePlayer;
 import engine.UIManager;
+import engine.World;
 import gui.AbstractTerminalGUI;
 import gui.ITerminalGUI;
+import utils.Constants;
 import utils.InputHandler;
 import utils.Utils;
 
@@ -15,8 +15,8 @@ import java.io.IOException;
  * GUI implementation for the main game screen.
  */
 public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
-    private boolean gameRunning = true;
-    private ExamplePlayer examplePlayer;
+    private World exampleWorld; // Should be renamed to "world"
+    private final int FPS = 60;
     /**
      * Constructor for the GameGUI.
      *
@@ -36,33 +36,26 @@ public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
         screen.clear();
         Utils.hideCursor(0, 0, textGraphics);
 
-        int centerX = screen.getTerminalSize().getColumns()/2;
-        int centerY = screen.getTerminalSize().getRows()/2;
-        examplePlayer = new ExamplePlayer(centerX, centerY);
+        int screenWidth = screen.getTerminalSize().getColumns();
+        int screenHeight = screen.getTerminalSize().getRows();
+        exampleWorld = new World(screenWidth, screenHeight); // Initialize the world passing the necessary parameters
 
         // InputHandler is a class to handle input asynchronously
         InputHandler inputHandler = new InputHandler(screen);
         inputHandler.startThread();
 
-        while (gameRunning){
+        // Main game loop
+        while (exampleWorld.isRunning()){
             // Draw everything on screen
             draw();
-            // Get the key press from the user if any
-            KeyStroke choice = inputHandler.handleInput();
-            if (choice != null){
-                // If the user has pressed any key
-                switch (choice.getKeyType()) {
-                    // Handle arrow movement
-                    case ArrowUp -> examplePlayer.move(0, -1);
-                    case ArrowDown -> examplePlayer.move(0, 1);
-                    case ArrowLeft -> examplePlayer.move(-1, 0);
-                    case ArrowRight -> examplePlayer.move(1, 0);
-                    case EOF, Escape -> gameRunning = false;
-                }
-            }
+            // Get the key press from the user and pass it to the world.
+            // If you want you can handle the keypress here, is a personal preference
+            KeyStroke keyPress = inputHandler.handleInput();
+            exampleWorld.update(keyPress);
 
-            // Don't burn the CPU
-            Utils.waitFor(10);
+            // This determines the FPS of the game, avoiding CPU burn
+            // 1000milliseconds divided by the fixed game frame-rate
+            Utils.waitFor(1000 / Constants.GameFPS);
         }
         // Stop the input handler thread
         inputHandler.stopThread();
@@ -81,35 +74,10 @@ public class GameGUI extends AbstractTerminalGUI implements ITerminalGUI {
         super.draw();
         textGraphics.setForegroundColor(uiManager.getThemeForeground());
         textGraphics.setBackgroundColor(uiManager.getThemeBackground());
-        drawText("""
-                This is an example for a game gui.
-                Here you should put the logic for your game.
-                Use your arrows keys to move the example player.
-                The player position is:\s""" + examplePlayer.getX()+", "+ examplePlayer.getY());
 
-        // If there is a player instance, then draw the player
-        if (examplePlayer != null){
-            examplePlayer.draw(textGraphics);
-        }
-
-        textGraphics.disableModifiers(SGR.BOLD);
-        textGraphics.setForegroundColor(uiManager.getThemeForeground());
-        textGraphics.setBackgroundColor(uiManager.getThemeBackground());
-        textGraphics.putString(0, getTerminalHeight()-1, "Press \"Escape\" to exit");
+        // Draw the world (including the player)
+        exampleWorld.draw(textGraphics);
+        // Refresh the screen to see the actual changes
         screen.refresh();
-    }
-
-    /**
-     * Draws the text with normal colors.
-     *
-     * @param completeText The complete text to be drawn.
-     */
-    private void drawText(String completeText){
-        int offsetY = 1;
-        for (String line : completeText.split("\n")){
-            textGraphics.putString(0, offsetY, line);
-            offsetY++;
-        }
-        Utils.hideCursor(0, 0, textGraphics);
     }
 }
