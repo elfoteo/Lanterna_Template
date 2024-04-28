@@ -9,6 +9,7 @@ import engine.UIManager;
 import gui.AbstractTerminalGUI;
 import gui.ITerminalGUI;
 import utils.Constants;
+import utils.Utils;
 
 import java.io.IOException;
 
@@ -102,6 +103,12 @@ public class SettingsGUI extends AbstractTerminalGUI implements ITerminalGUI {
     private void saveAndClose(){
         uiManager.config.name = nameTextBox.getText();
         uiManager.config.surname = surnameTextBox.getText();
+        try{
+            uiManager.configAPI.save();
+        }
+        catch (Exception ignore){
+            Utils.Debug("Failed to save settings to disk");
+        }
         onClose(); // Close
     }
 
